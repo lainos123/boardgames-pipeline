@@ -4,7 +4,7 @@
 # returns via standard output a list of the column titles (taken 
 # from the first line) the number of empty cells found in that column
 
-# usage: ./scripts/empty_cells.sh ./data/<filename> "<separator>"
+# usage: ./empty_cells.sh <filename> "<separator>"
 
 # read the filename and separator from the command line
 filename=$1
