@@ -9,7 +9,6 @@
 # read the filename and separator from the command line
 filename=$1
 separator=$2
-echo "separator: $separator"
 
 # check if the file exists
 if [ ! -f "$filename" ]; then
@@ -37,7 +36,6 @@ fi
 
 # Extract the first line (column titles)
 first_column=$(head -n 1 "$filename" | tr -d '\r') # remove carriage return characters
-echo "Column titles: $first_column"
 
 # ge tthe number of columns using gawk
 num_columns=$(echo "$first_column" | gawk -F"$separator" '{print NF}')
