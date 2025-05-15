@@ -5,6 +5,7 @@
 # from the first line) the number of empty cells found in that column
 
 # usage: ./empty_cells.sh <filename> "<separator>"
+# eg: ./empty_cells.sh bgg_dataset.txt ";"
 
 # read the filename and separator from the command line
 filename=$1

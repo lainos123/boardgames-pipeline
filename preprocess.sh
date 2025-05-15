@@ -2,6 +2,9 @@
 
 # this script converts a semicolon separated file to a tab separated file and outputs 
 
+# usage: ./preprocess.sh <filename>
+# eg: ./preprocess.sh bgg_dataset.txt
+
 filename=$1
 
 # check if the file exists
@@ -16,16 +19,7 @@ if [ ! -s "$filename" ]; then
     exit 1
 fi
 
-# check if the separator is provided
-if [ -z "$separator" ]; then
-    echo "Separator not provided!"
-    exit 1
-fi
 
-# check if the separator is a single character
-if [ ${#separator} -ne 1 ]; then
-    echo "Separator must be a single character!"
-    exit 1
-fi
-
-# convert the file to a tab separated file using gawk
+# convert the semicolon separated file to a tab separated file
+sed 's/;/	/g' "$filename" > "${filename%.txt}_tab.txt"
+echo "File converted to tab separated format: ${filename%.txt}_tab.txt"
