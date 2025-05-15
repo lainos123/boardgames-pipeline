@@ -37,3 +37,24 @@ if grep -q $'\r' "${filename%.txt}_tab.txt"; then
 else
     echo "File already has Unix line endings, no conversion needed."
 fi
+
+
+# change floating point numbers to have , as decimal point (dont touch title column)
+col=2 # title column
+# check for commas in columns before column 2
+if cut -f1 "${filename%.txt}_tab.txt" | grep -qE '[0-9]+,[0-9]+' || \
+   cut -f3- "${filename%.txt}_tab.txt" | grep -qE '[0-9]+,[0-9]+'; then
+
+    # save title column
+    cut -f$col "${filename%.txt}_tab.txt" > col2.tmp
+
+    cut -f1-$(($col-1)) "${filename%.txt}_tab.txt" | sed 's/\([0-9]\+\),\([0-9]\+\)/\1.\2/g' > before.tmp
+    cut -f$(($col+1))- "${filename%.txt}_tab.txt" | sed 's/\([0-9]\+\),\([0-9]\+\)/\1.\2/g' > after.tmp
+    # recombine the columns
+    paste before.tmp col2.tmp after.tmp > "${filename%.txt}_tab.txt"
+    rm before.tmp col2.tmp after.tmp
+    
+    echo "Decimal commas converted to decimal points (except title column)"
+else
+    echo "No decimal commas found to convert in non-title columns"
+fi
