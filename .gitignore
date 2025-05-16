@@ -1,2 +1,4 @@
 .DS_Store
 bgg_dataset_tab.txt
+*.tsv
+*.ipynb
