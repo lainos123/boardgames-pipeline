@@ -63,8 +63,8 @@ if cut -f1 "${filename}.tsv" | grep -qE '[0-9]+,[0-9]+' || \
     # save title column
     cut -f$col "${filename}.tsv" > col2.tmp
 
-    cut -f1-$(($col-1)) "${filename}.tsv" | sed 's/\([0-9]\+\),\([0-9]\+\)/\1.\2/g' > before.tmp
-    cut -f$(($col+1))- "${filename}.tsv" | sed 's/\([0-9]\+\),\([0-9]\+\)/\1.\2/g' > after.tmp
+    cut -f1-$((col-1)) "${filename}.tsv" | sed 's/\([0-9]\+\),\([0-9]\+\)/\1.\2/g' > before.tmp
+    cut -f$((col+1))- "${filename}.tsv" | sed 's/\([0-9]\+\),\([0-9]\+\)/\1.\2/g' > after.tmp
     # recombine the columns
     paste before.tmp col2.tmp after.tmp > "${filename}.tsv"
     rm before.tmp col2.tmp after.tmp

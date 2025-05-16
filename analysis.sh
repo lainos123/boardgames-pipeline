@@ -95,9 +95,9 @@ correlation() {
 
 
 # find correlation between publication year and average rating 
-year_corr=$(printf "%.3f" $(correlation 3 9))
+year_corr=$(printf "%.3f" "$(correlation 3 9)")
 echo "Testing correlation between the year of publication and the average rating is $year_corr"
 
 # find correlation between game complexity and average rating 
-complexity_corr=$(printf "%.3f" $(correlation 11 9))
+complexity_corr=$(printf "%.3f" "$(correlation 11 9)")
 echo "Testing correlation between the game complexity and the average rating is $complexity_corr"
