@@ -52,11 +52,22 @@ num_columns=$(echo "$first_column" | gawk -F"$separator" '{print NF}')
 # loop through each column
 for ((i=1; i<=num_columns; i++)); do
     # get the column title
-    column_title=$(echo "$first_column" | gawk -F"$separator" -v col=$i '{print $col}')
-    empty_cells=$(tail -n +2 "$filename" | gawk -F"$separator" -v col=$i 'BEGIN {count = 0} {if ($col == "") count++} END {print count}')
+    column_title=$(echo "$first_column" | \
+        gawk -F"$separator" -v col=$i '{print $col}')
+    
+    empty_cells=$(tail -n +2 "$filename" | \
+        gawk -F"$separator" -v col=$i \
+        'BEGIN {count = 0} \
+        {if ($col == "") count++} \
+        END {print count}')
 
-    if [ "$i" -eq "$num_columns" ]; then # couldn't do this with the previous method becease the new line character wasnt being counted
-        empty_cells=$(tail -n +2 "$filename" | gawk -F"$separator" -v col=$i '{if (length($col) <= 1) count++} END {print count}') 
+    if [ "$i" -eq "$num_columns" ]; then 
+        # couldn't do this with the previous method because the new line 
+        # character wasn't being counted
+        empty_cells=$(tail -n +2 "$filename" | \
+            gawk -F"$separator" -v col=$i \
+            '{if (length($col) <= 1) count++} \
+            END {print count}') 
         echo "$column_title: $empty_cells"
     else
         # print the column title and the number of empty cells

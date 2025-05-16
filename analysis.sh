@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# This script analyses a tab-separated board game dataset (output from `preprocess.sh`) to answer three research questions:
+# This script analyses a .tsv board game dataset (output from `preprocess.sh`) to answer three questions:
 # 1. What are the most frequently occurring game mechanics and domains across all games?
 # 2. Is there a correlation between a game's publication year and its average rating?
 # 3. Is there a correlation between a game's complexity rating and its average rating?
@@ -41,8 +41,21 @@ fi
 tail -n +2 "$filename" | cut -f13 > mechanics.tmp
 tail -n +2 "$filename" | cut -f14 > domains.tmp
 
-most_popular_mechanics=$(tr ',' '\n' < mechanics.tmp | sed 's/^ *//;s/ *$//;s/"//g' | grep -v '^$' | sort | uniq -c | sort -nr | head -n1)
-most_popular_domain=$(tr ',' '\n' < domains.tmp | sed 's/^ *//;s/ *$//;s/"//g' | grep -v '^$' | sort | uniq -c | sort -nr | head -n1)
+most_popular_mechanics=$(tr ',' '\n' < mechanics.tmp | \
+    sed 's/^ *//;s/ *$//;s/"//g' | \
+    grep -v '^$' | \
+    sort | \
+    uniq -c | \
+    sort -nr | \
+    head -n1)
+
+most_popular_domain=$(tr ',' '\n' < domains.tmp | \
+    sed 's/^ *//;s/ *$//;s/"//g' | \
+    grep -v '^$' | \
+    sort | \
+    uniq -c | \
+    sort -nr | \
+    head -n1)
 
 mechanics_count=$(echo "$most_popular_mechanics" | gawk '{print $1}')
 mechanics_name=$(echo "$most_popular_mechanics" | gawk '{$1=""; print substr($0,2)}')
@@ -82,7 +95,9 @@ correlation() {
 
 
 # find correlation between publication year and average rating 
-echo "Testing correlation between the year of publication and the average rating is $(printf "%.3f" $(correlation 3 9))"
+year_corr=$(printf "%.3f" $(correlation 3 9))
+echo "Testing correlation between the year of publication and the average rating is $year_corr"
 
 # find correlation between game complexity and average rating 
-echo "Testing correlation between the game complexity and the average rating is $(printf "%.3f" $(correlation 11 9))"
+complexity_corr=$(printf "%.3f" $(correlation 11 9))
+echo "Testing correlation between the game complexity and the average rating is $complexity_corr"
