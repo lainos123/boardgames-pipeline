@@ -15,6 +15,7 @@ filename=$1
 
 # Check if argument is provided
 if [ $# -ne 1 ]; then
+    echo "Error: Missing or wrong number of arguments"
     echo "Usage: $0 <filename>"
     exit 1
 fi
@@ -101,5 +102,5 @@ else
 fi
 
 # Rename the final output file to have .tsv extension
-cp "data_with_ids.tmp" "${filename}_cleaned.tsv"
+mv "data_with_ids.tmp" "${filename}_cleaned.tsv"
 echo "Final output saved as ${filename}_cleaned.tsv"

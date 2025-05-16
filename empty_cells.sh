@@ -7,6 +7,14 @@
 # usage: ./empty_cells.sh <filename> "<separator>"
 # eg: ./empty_cells.sh bgg_dataset.txt ";"
 
+# Check if arguments are provided
+if [ $# -ne 2 ]; then
+    echo "Error: Missing or wrong number of arguments"
+    echo "Usage: $0 <filename> <separator>"
+    echo "Example: $0 bgg_dataset.txt \";\""
+    exit 1
+fi
+
 # read the filename and separator from the command line
 filename=$1
 separator=$2

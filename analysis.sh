@@ -9,8 +9,11 @@
 # usage: ./analysis.sh <filename>
 # eg: ./analysis.sh bgg_dataset_cleaned.tsv
 
+# Check if argument is provided
 if [ $# -ne 1 ]; then
+    echo "Error: Missing or wrong number of arguments"
     echo "Usage: $0 <filename>"
+    echo "Example: $0 bgg_dataset_cleaned.tsv"
     exit 1
 fi
 
@@ -28,6 +31,11 @@ if [ ! -s "$filename" ]; then
     exit 1
 fi
 
+# Check if the file is tab-separated
+if ! file "$filename" | grep -q "tab-separated"; then
+    echo "Error: File must be tab-separated"
+    exit 1
+fi
 
 # find and print the most popular mechanics and domains
 tail -n +2 "$filename" | cut -f13 > mechanics.tmp
