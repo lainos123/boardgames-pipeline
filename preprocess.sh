@@ -58,3 +58,10 @@ if cut -f1 "${filename%.txt}_tab.txt" | grep -qE '[0-9]+,[0-9]+' || \
 else
     echo "No decimal commas found to convert in non-title columns"
 fi
+
+
+# delete all non-ASCII characters
+tr -c '\0-\177' -d < "${filename%.txt}_tab.txt" > "${filename%.txt}_tab_ascii.txt" # decimal 0-127
+mv "${filename%.txt}_tab_ascii.txt" "${filename%.txt}_tab.txt"
+echo "Non-ASCII characters removed from file"
+
