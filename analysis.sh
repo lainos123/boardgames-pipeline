@@ -1,6 +1,11 @@
 #!/bin/bash
 
-# This script analyses a TSV file of board game data to answer research questions
+# This script analyses a tab-separated board game dataset (output from `preprocess.sh`) to answer three research questions:
+# 1. What are the most frequently occurring game mechanics and domains across all games?
+# 2. Is there a correlation between a game's publication year and its average rating?
+# 3. Is there a correlation between a game's complexity rating and its average rating?
+# The script processes the data and outputs statistical results for each question to the terminal.
+
 # usage: ./analysis.sh <filename>
 # eg: ./analysis.sh bgg_dataset_cleaned.tsv
 

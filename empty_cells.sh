@@ -38,7 +38,7 @@ fi
 # Extract the first line (column titles)
 first_column=$(head -n 1 "$filename" | tr -d '\r') # remove carriage return characters
 
-# ge tthe number of columns using gawk
+# get the number of columns using gawk
 num_columns=$(echo "$first_column" | gawk -F"$separator" '{print NF}')
 
 # loop through each column

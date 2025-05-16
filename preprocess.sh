@@ -1,6 +1,12 @@
 #!/bin/bash
 
-# this script converts a semicolon separated file to a tab separated file and outputs 
+# This script preprocesses a semicolon-separated board game dataset by:
+# 1. Converting semicolon separators to tab characters
+# 2. Converting Microsoft line endings (\r\n) to Unix line endings (\n)
+# 3. Converting decimal commas to decimal points in numeric columns
+# 4. Removing non-ASCII characters from the output
+# 5. Adding unique IDs to rows with missing IDs (starting from the highest existing ID)
+# The processed file is saved with a .tsv extension and the suffix `_cleaned`
 
 # usage: ./preprocess.sh <filename>
 # eg: ./preprocess.sh bgg_dataset.txt
@@ -74,8 +80,9 @@ gawk -F'\t' -v OFS='\t' -v max="$max_id" '
     NR == 1 { print; next }
     $1 == "" || $1 ~ /^[[:space:]]*$/ { $1 = ++max }
     { print }
-' "${filename}.tsv" > "${filename}_new.tsv" && mv "${filename}_new.tsv" "${filename}.tsv"
+' "${filename}.tsv" > "${filename}_new.tsv" && mv "${filename}_new.tsv" "${filename}_cleaned.tsv"
+rm "${filename}.tsv"
 echo "Added unique IDs to rows with empty IDs (starting from $max_id)"
 
 # Rename the final output file to have .tsv extension
-echo "Final output saved as ${filename}.tsv"
+echo "Final output saved as ${filename}_cleaned.tsv"

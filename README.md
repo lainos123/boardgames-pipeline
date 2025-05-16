@@ -30,7 +30,7 @@ Cleans the raw data:
 - Converts decimal commas to decimal points in numeric columns
 - Removes non-ASCII characters
 - Adds unique IDs to rows with missing IDs
-- Produces a clean TSV file ready for analysis
+- Produces a clean TSV file **with the suffix `_cleaned`** ready for analysis
 
 Usage:
 ```bash
@@ -52,7 +52,7 @@ Usage:
 
 ### How to Run the Complete Pipeline
 
-1. Check for data quality issues:
+1. Check for empty cells:
    ```bash
    ./empty_cells.sh bgg_dataset.txt ";"
    ```
@@ -69,7 +69,7 @@ Usage:
 
 ### Sample Output
 
-When running the analysis on the sample dataset:
+**Step 1: Checking for empty cells**
 ```
 /ID: 16
 Name: 0
@@ -85,18 +85,25 @@ Complexity Average: 0
 Owned Users: 23
 Mechanics: 1598
 Domains: 10159
+```
 
+**Step 2: Clean and preprocess the data**
+```
 File converted to Unix line endings: bgg_dataset.tsv
 Decimal commas converted to decimal points (except title column)
 Non-ASCII characters removed from file
 Added unique IDs to rows with empty IDs (starting from 331787)
 Final output saved as bgg_dataset_cleaned.tsv
+```
 
+**Step 3: Analyse results**
+```
 The most popular game mechanics is Dice Rolling found in 5672 games
 The most popular game domain is Wargames found in 3316 games
 
 Testing correlation between the year of publication and the average rating is 0.081
 Testing correlation between the game complexity and the average rating is 0.481
 ```
+
 ---
 **Author: Laine Mulvay**  – [LinkedIn](https://www.linkedin.com/in/lainemulvay/)
