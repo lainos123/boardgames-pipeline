@@ -31,9 +31,9 @@ if [ ! -s "$filename" ]; then
     exit 1
 fi
 
-# Check if the file is tab-separated
-if ! file "$filename" | grep -q "tab-separated"; then
-    echo "Error: File must be tab-separated"
+# Check if file has .tsv extension
+if [[ ! "$filename" =~ \.tsv$ ]]; then
+    echo "Error: File must be a .tsv file"
     exit 1
 fi
 
