@@ -54,26 +54,22 @@ else
 fi
 
 
-# change floating point numbers to have , as decimal point (dont touch title column)
-col=2 # title column
-
-if cut -f1 "${filename}_cleaned.tsv" | grep -qE '[0-9]+,[0-9]+' || \
-   cut -f3- "${filename}_cleaned.tsv" | grep -qE '[0-9]+,[0-9]+'; then
-
-    # save title column
-    cut -f$col "${filename}_cleaned.tsv" > col2.tmp
-
-    cut -f1-$((col-1)) "${filename}_cleaned.tsv" | sed 's/\([0-9]\+\),\([0-9]\+\)/\1.\2/g' > before.tmp
-    cut -f$((col+1))- "${filename}_cleaned.tsv" | sed 's/\([0-9]\+\),\([0-9]\+\)/\1.\2/g' > after.tmp
-    # recombine the columns
-    paste before.tmp col2.tmp after.tmp > "${filename}_cleaned.tsv"
-    rm before.tmp col2.tmp after.tmp
+# Convert decimal commas to decimal points in columns 3-12 (excluding Mechanics and Domains columns)
+if cut -f3-12 "${filename}_cleaned.tsv" | grep -qE '[0-9]+,[0-9]+'; then
+    gawk -F'\t' -v OFS='\t' '
+    {
+        for(i=3; i<=12; i++) {
+            gsub(/,/, ".", $i)
+        }
+        print
+    }' "${filename}_cleaned.tsv" > "${filename}_cleaned.tsv.tmp"
     
-    echo "Decimal commas converted to decimal points (except title column)"
+    mv "${filename}_cleaned.tsv.tmp" "${filename}_cleaned.tsv"
+    
+    echo "Decimal commas converted to decimal points in columns 3-12"
 else
-    echo "No decimal commas found to convert in non-title columns"
+    echo "No decimal commas found to convert in columns 3-12"
 fi
-
 
 # check if file contains non-ASCII characters
 if grep -q '[^\x00-\x7F]' "${filename}_cleaned.tsv"; then
