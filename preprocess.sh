@@ -35,7 +35,7 @@ fi
 # check if file has semicolon separators
 if grep -q ";" "$filename"; then
     # convert the semicolon separated file to a tab separated file
-    sed 's/;/	/g' "$filename" > "${filename%.txt}.tsv"
+    sed 's/;/	/g' "$filename" > "${filename%.txt}_cleaned.tsv"
     filename="${filename%.txt}" # update filename to basename
 else
     echo "Error: File does not contain semicolon separators!"
@@ -45,10 +45,10 @@ fi
 
 
 # check if file has Microsoft line endings (\r\n) and convert only if needed
-if grep -q $'\r' "${filename}.tsv"; then
+if grep -q $'\r' "${filename}_cleaned.tsv"; then
     # convert the Microsoft line endings to Unix line endings (remove \r)
-    sed -i 's/\r$//' "${filename}.tsv"
-    echo "File converted to Unix line endings: ${filename}.tsv"
+    sed -i 's/\r$//' "${filename}_cleaned.tsv"
+    echo "File converted to Unix line endings: ${filename}_cleaned.tsv"
 else
     echo "File already has Unix line endings, no conversion needed."
 fi
@@ -57,16 +57,16 @@ fi
 # change floating point numbers to have , as decimal point (dont touch title column)
 col=2 # title column
 
-if cut -f1 "${filename}.tsv" | grep -qE '[0-9]+,[0-9]+' || \
-   cut -f3- "${filename}.tsv" | grep -qE '[0-9]+,[0-9]+'; then
+if cut -f1 "${filename}_cleaned.tsv" | grep -qE '[0-9]+,[0-9]+' || \
+   cut -f3- "${filename}_cleaned.tsv" | grep -qE '[0-9]+,[0-9]+'; then
 
     # save title column
-    cut -f$col "${filename}.tsv" > col2.tmp
+    cut -f$col "${filename}_cleaned.tsv" > col2.tmp
 
-    cut -f1-$((col-1)) "${filename}.tsv" | sed 's/\([0-9]\+\),\([0-9]\+\)/\1.\2/g' > before.tmp
-    cut -f$((col+1))- "${filename}.tsv" | sed 's/\([0-9]\+\),\([0-9]\+\)/\1.\2/g' > after.tmp
+    cut -f1-$((col-1)) "${filename}_cleaned.tsv" | sed 's/\([0-9]\+\),\([0-9]\+\)/\1.\2/g' > before.tmp
+    cut -f$((col+1))- "${filename}_cleaned.tsv" | sed 's/\([0-9]\+\),\([0-9]\+\)/\1.\2/g' > after.tmp
     # recombine the columns
-    paste before.tmp col2.tmp after.tmp > "${filename}.tsv"
+    paste before.tmp col2.tmp after.tmp > "${filename}_cleaned.tsv"
     rm before.tmp col2.tmp after.tmp
     
     echo "Decimal commas converted to decimal points (except title column)"
@@ -76,10 +76,10 @@ fi
 
 
 # check if file contains non-ASCII characters
-if grep -q '[^\x00-\x7F]' "${filename}.tsv"; then
+if grep -q '[^\x00-\x7F]' "${filename}_cleaned.tsv"; then
     # delete all non-ASCII characters
-    tr -c '\0-\177' -d < "${filename}.tsv" > "${filename}_ascii.tsv" # decimal 0-127
-    mv "${filename}_ascii.tsv" "${filename}.tsv"
+    tr -c '\0-\177' -d < "${filename}_cleaned.tsv" > "${filename}_ascii.tsv" # decimal 0-127
+    mv "${filename}_ascii.tsv" "${filename}_cleaned.tsv"
     echo "Non-ASCII characters removed from file"
 else
     echo "No non-ASCII characters found in file"
@@ -87,20 +87,25 @@ fi
 
 
 # add new unique IDs for rows with empty IDs
-max_id=$(gawk -F'\t' 'NR>1 && $1 ~ /^[0-9]+$/ {if($1 > max) max = $1} END {print max+0}' "${filename}.tsv")
-empty_count=$(gawk -F'\t' 'NR>1 && ($1 == "" || $1 ~ /^[[:space:]]*$/) {count++} END {print count+0}' "${filename}.tsv")
+max_id=$(gawk -F'\t' 'NR>1 && $1 ~ /^[0-9]+$/ {if($1 > max) max = $1} END {print max+0}' "${filename}_cleaned.tsv")
+empty_count=$(gawk -F'\t' 'NR>1 && ($1 == "" || $1 ~ /^[[:space:]]*$/) {count++} END {print count+0}' "${filename}_cleaned.tsv")
 
 if [ "$empty_count" -gt 0 ]; then
     gawk -F'\t' -v OFS='\t' -v max="$max_id" '
         NR == 1 { print; next }
         $1 == "" || $1 ~ /^[[:space:]]*$/ { $1 = ++max }
         { print }
-    ' "${filename}.tsv" > "data_with_ids.tmp"
+    ' "${filename}_cleaned.tsv" > "data_with_ids.tmp"
     echo "Added $empty_count unique IDs to rows with empty IDs (starting from $max_id)"
 else
     echo "No empty IDs found"
 fi
 
 # Rename the final output file to have .tsv extension
-mv "data_with_ids.tmp" "${filename}_cleaned.tsv"
+if [ -f "data_with_ids.tmp" ]; then
+    mv "data_with_ids.tmp" "${filename}_cleaned.tsv"
+else
+    cp "${filename}.tsv" "${filename}_cleaned.tsv"
+fi
+rm -f "data_with_ids.tmp"
 echo "Final output saved as ${filename}_cleaned.tsv"
